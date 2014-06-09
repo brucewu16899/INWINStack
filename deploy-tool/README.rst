@@ -60,8 +60,8 @@ Logout current account and re-login with username 'stack', password 'stack'.
 ::
 
  $ sudo apt-get install -y git
- $ git clone --recursive https://github.com/inwin/INWINstack.git
- $ cd INWINstack/deploy-tool/
+ $ git clone --recursive https://github.com/inwin/INWINStack.git
+ $ cd INWINStack/deploy-tool/
 
 
 -----------------------------
