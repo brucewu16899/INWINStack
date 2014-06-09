@@ -30,7 +30,7 @@ Paste below command to shell exclude '$' sign.
 
   $ echo <<EOF > pre-install.sh
   #!/bin/bash
-  echo 'Star install...'
+  echo 'Start install...'
   echo ''
   sudo apt-get install -y python openssh-server sshpass python-netaddr vim man
   echo 'stack ALL=(ALL) NOPASSWD:ALL' > /tmp/50_stack_sh
