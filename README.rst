@@ -68,7 +68,9 @@ Logout current account and re-login with username 'stack', password 'stack'.
  Option 1 (using answer file)
 -----------------------------
 
- $ bin/packstack --gen-answer-file=ans.txt
+::
+
+ $ bin/inwinstack --gen-answer-file=ans.txt
 
 then edit ans.txt as appropriate e.g.
 
@@ -76,7 +78,7 @@ then edit ans.txt as appropriate e.g.
 
 ::
 
- $ bin/packstack --answer-file=ans.txt
+ $ bin/inwinstack --answer-file=ans.txt
 
 --------------------------------------
  Option 2 Standalone mode(All in one)
@@ -84,7 +86,7 @@ then edit ans.txt as appropriate e.g.
 
 ::
 
- $ bin/packstack --allinone
+ $ bin/inwinstack --allinone
 
 When setup complete, the installer will generate an packstacXXXXX.txt file under your home folder.
 
@@ -106,7 +108,7 @@ To make packstack write more detailed information into the log file you can use 
 
 ::
 
- $ packstack -d --allinone
+ $ inwinstack -d --allinone
 
 ----------------------------
  Using command line utility
