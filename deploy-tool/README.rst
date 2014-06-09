@@ -1,4 +1,4 @@
-An Utility to install OpenStack(IceHouse) on **Ubuntu 14.04**.
+An utility to install OpenStack(IceHouse) on **Ubuntu 14.04**.
 
 Our work were based upon PackStack.
 
