@@ -222,12 +222,12 @@ def create_manifest(config):
         # configured to be installed.
         config['CONFIG_NEUTRON_L3_EXT_BRIDGE'] = 'br-ex'
 
-        # Set template-specific parameter to configure whether neutron is
-        # available.  The value needs to be true/false rather than the y/n.
-        # provided by CONFIG_NEUTRON_INSTALL.
-        config['PROVISION_NEUTRON_AVAILABLE'] = config['CONFIG_NEUTRON_INSTALL']
-        marshall_conf_bool(config, 'PROVISION_NEUTRON_AVAILABLE')
+    # Set template-specific parameter to configure whether neutron is
+    # available.  The value needs to be true/false rather than the y/n.
+    # provided by CONFIG_NEUTRON_INSTALL.
+    config['PROVISION_NEUTRON_AVAILABLE'] = config['CONFIG_NEUTRON_INSTALL']
+    marshall_conf_bool(config, 'PROVISION_NEUTRON_AVAILABLE')
 
-        manifest_file = '%s_provision.pp' % host
-        manifest_data = getManifestTemplate("provision.pp")
-        appendManifestFile(manifest_file, manifest_data)
+    manifest_file = '%s_provision.pp' % host
+    manifest_data = getManifestTemplate("provision.pp")
+    appendManifestFile(manifest_file, manifest_data)

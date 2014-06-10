@@ -11,7 +11,7 @@ Our work were based upon PackStack.
  -  8GB RAM
  -  i5 or above processor
  -  40GB free disk space
- -  1 NIC (for standalone); internet accesability
+ -  2 NIC (for standalone); internet accesability
  -  Select 'basic server install'
  -  Set Language to 'English'
  -  Run 'sudo apt-get update' first before you proceed to next step
@@ -114,10 +114,10 @@ To make packstack write more detailed information into the log file you can use 
  Using command line utility
 ----------------------------
 
-When you finish OpenStack installation, the installer will generate two file named with prefix **keystone\_**
+When you finish OpenStack installation, the installer will generate two file named with prefix **keystonerc\_**
 Execute below command before you use any OpenStack client utilities.
 
 ::
 
-$source keystone_admin  
+$source keystonerc_admin  
 

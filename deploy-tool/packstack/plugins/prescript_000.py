@@ -132,7 +132,7 @@ def initConfig(controllerObject):
                    "PROMPT"          : "Should Packstack install OpenStack Metering (Ceilometer)",
                    "OPTION_LIST"     : ["y", "n"],
                    "VALIDATORS"      : [validators.validate_options],
-                   "DEFAULT_VALUE"   : "n",
+                   "DEFAULT_VALUE"   : "y",
                    "MASK_INPUT"      : False,
                    "LOOSE_VALIDATION": False,
                    "CONF_NAME"       : "CONFIG_CEILOMETER_INSTALL",
@@ -144,7 +144,7 @@ def initConfig(controllerObject):
                    "PROMPT"          : "Should Packstack install OpenStack Orchestration (Heat)",
                    "OPTION_LIST"     : ["y", "n"],
                    "VALIDATORS"      : [validators.validate_options],
-                   "DEFAULT_VALUE"   : "n",
+                   "DEFAULT_VALUE"   : "y",
                    "MASK_INPUT"      : False,
                    "LOOSE_VALIDATION": False,
                    "CONF_NAME"       : "CONFIG_HEAT_INSTALL",
@@ -270,14 +270,6 @@ def install_keys(config):
         if '/' in hostname:
             hostname = hostname.split('/')[0]
         server = utils.ScriptRunner(hostname)
-        # TODO replace all that with ssh-copy-id
-#       server.append("mkdir -p ~/.ssh")
-#       server.append("chmod 500 ~/.ssh")
-#       server.append("grep '%s' ~/.ssh/authorized_keys > /dev/null 2>&1 || "
-#                     "echo %s >> ~/.ssh/authorized_keys"
-#                     % (sshkeydata, sshkeydata))
-#       server.append("chmod 400 ~/.ssh/authorized_keys")
-#       server.append("restorecon -r ~/.ssh")
         server.append("sshpass -p stack ssh-copy-id -i %s "
                       "-o StrictHostKeyChecking=no stack@%s" %
                       (config['CONFIG_SSH_KEY'], hostname))

@@ -14,7 +14,7 @@
 #
 #
 
-echo 'Star install...'
+echo 'Start install...'
 echo ''
 sudo apt-get install -y python openssh-server sshpass python-netaddr vim man
 echo 'stack ALL=(ALL) NOPASSWD:ALL' > /tmp/50_stack_sh
@@ -29,5 +29,5 @@ sudo -u stack /usr/bin/ssh-keygen -t rsa -N "" -f /home/stack/.ssh/id_rsa
 echo ''
 echo ''
 echo 'Pre-Install environment complete!'
-echo 'Please logut and use stack login to install openstack.'
+echo 'Please logout and use stack login to install openstack.'
 echo ''
