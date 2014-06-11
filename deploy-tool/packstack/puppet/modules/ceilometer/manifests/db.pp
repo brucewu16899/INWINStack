@@ -15,7 +15,7 @@
 #    Defaults to '0.9
 #
 class ceilometer::db (
-  $database_connection = 'mysql://ceilometer:ceilometer@localhost/ceilometer',
+  $database_connection = 'mysql://ceilometer:%(CONFIG_CEILOMETER_KS_PW)s@localhost/ceilometer',
   $sync_db             = true,
   $mysql_module        = '0.9',
 ) {
@@ -37,7 +37,7 @@ class ceilometer::db (
         include mysql::python
       }
     }
-    /^postgres:\/\//: {
+    /^postgresql:\/\//: {
       $backend_package = $::ceilometer::params::psycopg_package_name
     }
     /^mongodb:\/\//: {

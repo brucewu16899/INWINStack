@@ -43,8 +43,8 @@ def createmanifest(config):
     for hostname in filtered_hosts(config):
         manifestfile = "%s_postscript.pp" % hostname
         # cylee : We don't need  postscript selinux anymore.
-        #manifestdata = getManifestTemplate("postscript.pp")
-        #appendManifestFile(manifestfile, manifestdata, 'postscript')
+        manifestdata = getManifestTemplate("postscript.pp")
+        appendManifestFile(manifestfile, manifestdata, 'postscript')
         if config["CONFIG_NEUTRON_INSTALL"] == 'y':
             if config.get("CONFIG_PROVISION_ALL_IN_ONE_OVS_BRIDGE") != 'n':
                 config['EXT_BRIDGE_VAR'] = config['CONFIG_NEUTRON_L3_EXT_BRIDGE'].replace('-','_')

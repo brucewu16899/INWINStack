@@ -2,6 +2,7 @@ An utility to install OpenStack(IceHouse) on **Ubuntu 14.04**.
 
 Our work were based upon PackStack.
 
+
 --------------------------
  Recommended environment
 --------------------------
@@ -11,7 +12,7 @@ Our work were based upon PackStack.
  -  8GB RAM
  -  i5 or above processor
  -  40GB free disk space
- -  2 NIC (for standalone); internet accesability
+ -  2 NIC (for standalone); internet accessability
  -  Select 'basic server install'
  -  Set Language to 'English'
  -  Run 'sudo apt-get update' first before you proceed to next step
@@ -75,6 +76,7 @@ Logout current account and re-login with username 'stack', password 'stack'.
 then edit ans.txt as appropriate e.g.
 
  -  Edit the IP address to anywhere you want to install a piece of openstack on another server
+ -  Change how the OVS bridge get IP address(static or dhcp)
 
 ::
 
@@ -89,6 +91,7 @@ then edit ans.txt as appropriate e.g.
  $ bin/inwinstack --allinone
 
 When setup complete, the installer will generate an packstacXXXXX.txt file under your home folder.
+By default, allinone mode will set OVS network type to **VXLAN** and set br-ex to **dhcp** mode.
 
 ----------
  Logging

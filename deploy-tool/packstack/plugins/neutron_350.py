@@ -90,6 +90,18 @@ def initConfig(controllerObject):
              "USE_DEFAULT"     : False,
              "NEED_CONFIRM"    : False,
              "CONDITION"       : False },
+            {"CMD_OPTION"      : "neutron-l3-ext-bridge-type",
+             "USAGE"           : "The way of bridge that the Neutron L3 agent will use for external traffic.",
+             "PROMPT"          : "Enter the way of bridge the Neutron L3 agent will use for external traffic(static or dhcp)",
+             "OPTION_LIST"     : ["static", "dhcp"],
+             "VALIDATORS"      : [validators.validate_not_empty],
+             "DEFAULT_VALUE"   : "dhcp",
+             "MASK_INPUT"      : False,
+             "LOOSE_VALIDATION": True,
+             "CONF_NAME"       : "CONFIG_NEUTRON_L3_EXT_BRIDGE_TYPE",
+             "USE_DEFAULT"     : False,
+             "NEED_CONFIRM"    : False,
+             "CONDITION"       : False },
             {"CMD_OPTION"      : "neutron-dhcp-hosts",
              "USAGE"           : "A comma separated list of IP addresses on which to install Neutron DHCP agent",
              "PROMPT"          : "Enter a comma separated list of IP addresses on which to install Neutron DHCP agent",
@@ -735,18 +747,18 @@ def create_dhcp_manifests(config):
         manifest_file = "%s_neutron.pp" % (host,)
 
         # Firewall Rules
-        for f_host in q_hosts:
-            config['FIREWALL_ALLOWED'] = "'%s'" % f_host
-            config['FIREWALL_SERVICE_NAME'] = "neutron dhcp in"
-            config['FIREWALL_SERVICE_ID'] = "neutron_dhcp_in_%s_%s" % (host, f_host)
-            config['FIREWALL_PORTS'] = "'67'"
-            config['FIREWALL_CHAIN'] = "INPUT"
-            manifest_data += getManifestTemplate("firewall.pp")
-            config['FIREWALL_SERVICE_NAME'] = "neutron dhcp out"
-            config['FIREWALL_SERVICE_ID'] = "neutron_dhcp_out_%s_%s" % (host, f_host)
-            config['FIREWALL_PORTS'] = "'68'"
-            config['FIREWALL_CHAIN'] = "OUTPUT"
-            manifest_data += getManifestTemplate("firewall.pp")
+#       for f_host in q_hosts:
+#           config['FIREWALL_ALLOWED'] = "'%s'" % f_host
+#           config['FIREWALL_SERVICE_NAME'] = "neutron dhcp in"
+#           config['FIREWALL_SERVICE_ID'] = "neutron_dhcp_in_%s_%s" % (host, f_host)
+#           config['FIREWALL_PORTS'] = "'67'"
+#           config['FIREWALL_CHAIN'] = "INPUT"
+#           manifest_data += getManifestTemplate("firewall.pp")
+#           config['FIREWALL_SERVICE_NAME'] = "neutron dhcp out"
+#           config['FIREWALL_SERVICE_ID'] = "neutron_dhcp_out_%s_%s" % (host, f_host)
+#           config['FIREWALL_PORTS'] = "'68'"
+#           config['FIREWALL_CHAIN'] = "OUTPUT"
+#           manifest_data += getManifestTemplate("firewall.pp")
 
         appendManifestFile(manifest_file, manifest_data, 'neutron')
 
