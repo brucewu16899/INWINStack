@@ -124,12 +124,12 @@ def create_manifest(config):
     manifestfile = "%s_ceilometer.pp" % config['CONFIG_CEILOMETER_HOST']
     manifestdata = getManifestTemplate(get_mq(config, "ceilometer"))
     manifestdata += getManifestTemplate("ceilometer.pp")
-    config['FIREWALL_ALLOWED'] = "'ALL'"
-    config['FIREWALL_SERVICE_NAME'] = 'ceilometer-api'
-    config['FIREWALL_SERVICE_ID'] = 'ceilometer_api'
-    config['FIREWALL_PORTS'] = "'8777'"
-    config['FIREWALL_CHAIN'] = "INPUT"
-    manifestdata += getManifestTemplate("firewall.pp")
+#   config['FIREWALL_ALLOWED'] = "'ALL'"
+#   config['FIREWALL_SERVICE_NAME'] = 'ceilometer-api'
+#   config['FIREWALL_SERVICE_ID'] = 'ceilometer_api'
+#   config['FIREWALL_PORTS'] = "'8777'"
+#   config['FIREWALL_CHAIN'] = "INPUT"
+#   manifestdata += getManifestTemplate("firewall.pp")
     # Add a template that creates a group for nova because the ceilometer
     # class needs it
     if config['CONFIG_NOVA_INSTALL'] == 'n':
@@ -139,10 +139,10 @@ def create_manifest(config):
 def create_mongodb_manifest(config):
     manifestfile = "%s_mongodb.pp" % config['CONFIG_MONGODB_HOST']
     manifestdata = getManifestTemplate("mongodb.pp")
-    config['FIREWALL_ALLOWED'] = "'%s'" % config['CONFIG_CEILOMETER_HOST']
-    config['FIREWALL_SERVICE_NAME'] = 'mongodb-server'
-    config['FIREWALL_PORTS'] = "'27017'"
-    manifestdata += getManifestTemplate("firewall.pp")
+#   config['FIREWALL_ALLOWED'] = "'%s'" % config['CONFIG_CEILOMETER_HOST']
+#   config['FIREWALL_SERVICE_NAME'] = 'mongodb-server'
+#   config['FIREWALL_PORTS'] = "'27017'"
+#   manifestdata += getManifestTemplate("firewall.pp")
     appendManifestFile(manifestfile, manifestdata, 'pre')
 
 def create_keystone_manifest(config):

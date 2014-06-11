@@ -103,14 +103,14 @@ def createmanifest(config):
     config['FIREWALL_SERVICE_NAME'] = "glance"
     config['FIREWALL_PORTS'] = "'9292'"
     config['FIREWALL_CHAIN'] = "INPUT"
-    if config['CONFIG_NOVA_INSTALL'] == 'y':
-        for host in split_hosts(config['CONFIG_NOVA_COMPUTE_HOSTS']):
-            config['FIREWALL_ALLOWED'] = "'%s'" % host
-            config['FIREWALL_SERVICE_ID'] = "glance_%s" % host
-            manifestdata += getManifestTemplate("firewall.pp")
-    else:
-        config['FIREWALL_ALLOWED'] = "'ALL'"
-        config['FIREWALL_SERVICE_ID'] = "glance_ALL"
-        manifestdata += getManifestTemplate("firewall.pp")
+#   if config['CONFIG_NOVA_INSTALL'] == 'y':
+#       for host in split_hosts(config['CONFIG_NOVA_COMPUTE_HOSTS']):
+#           config['FIREWALL_ALLOWED'] = "'%s'" % host
+#           config['FIREWALL_SERVICE_ID'] = "glance_%s" % host
+#           manifestdata += getManifestTemplate("firewall.pp")
+#   else:
+#       config['FIREWALL_ALLOWED'] = "'ALL'"
+#       config['FIREWALL_SERVICE_ID'] = "glance_ALL"
+#       manifestdata += getManifestTemplate("firewall.pp")
 
     appendManifestFile(manifestfile, manifestdata)

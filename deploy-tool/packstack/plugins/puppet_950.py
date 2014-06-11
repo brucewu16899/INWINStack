@@ -25,9 +25,7 @@ PLUGIN_NAME = "OSPUPPET"
 PLUGIN_NAME_COLORED = utils.color_text(PLUGIN_NAME, 'blue')
 
 logging.debug("plugin %s loaded", __name__)
-# cylee : 2014-05-13 : change directory to self keeping module
-#PUPPET_DIR = os.environ.get('PACKSTACK_PUPPETDIR', '/usr/share/openstack-puppet/')
-#MODULE_DIR = os.path.join(PUPPET_DIR, 'modules')
+
 CURR_DIR = os.path.dirname(__file__)
 MODULE_DIR = os.path.abspath(os.path.normpath(os.path.join(CURR_DIR,
                                               "../puppet/modules/")))
@@ -62,9 +60,6 @@ def initSequences(controller):
             'functions': [copyPuppetModules]},
         {'title': 'Applying Puppet manifests',
             'functions': [applyPuppetManifest]},
-# cylee : Ubuntu don't need to change kernel
-#       {'title': 'Finalizing',
-#           'functions': [finalize]}
     ]
     controller.addSequence("Puppet", [], [], puppetsteps)
 
@@ -81,7 +76,6 @@ def installdeps(config):
         # cylee : 2014-05-13 : change install package name for Ubuntu
         for package in ("puppet",
                         "openssh-client", "tar", "netcat"):
-#           server.append("rpm -q --whatprovides %s || yum install -y %s" % (package, package))
             server.append("sudo -u root apt-get install -y %s" % (package))
         server.execute()
 
@@ -130,7 +124,7 @@ def copyPuppetModules(config):
 def waitforpuppet(currently_running):
     global controller
     log_len = 0
-    twirl = ["-","\\","|","/"]
+    twirl = ["--","\\","|","/"]
     while currently_running:
         for hostname, finished_logfile in currently_running:
             log_file = os.path.splitext(os.path.basename(finished_logfile))[0]
@@ -161,7 +155,7 @@ def waitforpuppet(currently_running):
             except ScriptRuntimeError:
                 # the test raises an exception if the file doesn't exist yet
                 # TO-DO: We need to start testing 'e' for unexpected exceptions
-                time.sleep(3)
+                time.sleep(0.5)
                 continue
 
             # check log file for relevant notices
@@ -235,15 +229,4 @@ def applyPuppetManifest(config):
     waitforpuppet(currently_running)
 
 
-def finalize(config):
-    for hostname in filtered_hosts(config):
-        server = utils.ScriptRunner(hostname)
-        server.append("installed=$(rpm -q kernel --last | head -n1 | "
-                      "sed 's/kernel-\([a-z0-9\.\_\-]*\).*/\\1/g')")
-        server.append("loaded=$(uname -r | head -n1)")
-        server.append('[ "$loaded" == "$installed" ]')
-        try:
-            rc, out = server.execute()
-        except ScriptRuntimeError:
-            controller.MESSAGES.append('Because of the kernel update the host '
-                                       '%s requires reboot.' % hostname)
+
