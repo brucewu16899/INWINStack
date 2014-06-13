@@ -73,10 +73,14 @@ Logout current account and re-login with username 'stack', password 'stack'.
 
  $ bin/inwinstack --gen-answer-file=ans.txt
 
-then edit ans.txt as appropriate e.g.
+It will generate ans.txt and put another common setting file called packstack-client-answers.txt in your $HOME folder.
+
+then edit ans.txt or packstack-client-answers.txt as appropriate e.g.
 
  -  Edit the IP address to anywhere you want to install a piece of openstack on another server
  -  Change how the OVS bridge get IP address(static or dhcp)
+
+The installer will try to load ans.txt first then overwrite those options exists in packstack-client-answers.txt.
 
 ::
 
@@ -89,6 +93,8 @@ then edit ans.txt as appropriate e.g.
 ::
 
  $ bin/inwinstack --allinone
+
+We don't recommended you use it because network related functionality may not work.
 
 When setup complete, the installer will generate an packstacXXXXX.txt file under your home folder.
 By default, allinone mode will set OVS network type to **VXLAN** and set br-ex to **dhcp** mode.

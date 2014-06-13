@@ -56,7 +56,9 @@ class openstack::provision(
   $tenant_name               = 'demo',
   $public_network_name       = 'public',
   $public_subnet_name        = 'public_subnet',
-  $floating_range            = '172.24.4.224/28',
+  $floating_range            = '172.20.0.1/16',
+  $public_gw_ip              = '172.20.0.1',
+  $allocation_pools          = '{"start" : "172.20.100.10", "end" : "172.20.100.200" }',
   $private_network_name      = 'private',
   $private_subnet_name       = 'private_subnet',
   $fixed_range               = '10.0.0.0/24',
@@ -163,6 +165,7 @@ class openstack::provision(
       ensure          => present,
       router_external => true,
       tenant_name     => $admin_tenant_name,
+      shared          => true,
     }
     neutron_subnet { $public_subnet_name:
       ensure          => 'present',
@@ -170,6 +173,9 @@ class openstack::provision(
       enable_dhcp     => false,
       network_name    => $public_network_name,
       tenant_name     => $admin_tenant_name,
+      gateway_ip      => $public_gw_ip,
+      allocation_pools => $allocation_pools,
+
     }
     neutron_network { $private_network_name:
       ensure      => present,

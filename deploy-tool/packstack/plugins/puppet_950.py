@@ -60,6 +60,8 @@ def initSequences(controller):
             'functions': [copyPuppetModules]},
         {'title': 'Applying Puppet manifests',
             'functions': [applyPuppetManifest]},
+        {'title': 'Create demo network',
+            'functions': [init_demo_network]},
     ]
     controller.addSequence("Puppet", [], [], puppetsteps)
 
@@ -89,8 +91,9 @@ def copyPuppetModules(config):
                            'swift', 'sysctl', 'tempest', 'vcsrepo', 'vlan',
                            'vswitch', 'xinetd', 'postgresql', 'staging', 'apt'))
 
-        # write puppet manifest to disk
+    # write puppet manifest to disk
     manifestfiles.writeManifests()
+
 
     server = utils.ScriptRunner()
     # cylee : Each system must create an sudoer called 'stack',
@@ -101,6 +104,12 @@ def copyPuppetModules(config):
         server.append("cd %s/puppet" % basedefs.DIR_PROJECT_DIR)
         server.append("cd %s" % basedefs.PUPPET_MANIFEST_DIR)
         server.append("tar --dereference -cpzf - ../manifests | "
+                      "ssh -o StrictHostKeyChecking=no "
+                          "-o UserKnownHostsFile=/dev/null "
+                          "stack@%s tar -C %s -xpzf -" % (hostname, host_dir))
+                
+        server.append("cd %s/" % basedefs.DIR_PROJECT_DIR)
+        server.append("tar --dereference -cpzf - other | "
                       "ssh -o StrictHostKeyChecking=no "
                           "-o UserKnownHostsFile=/dev/null "
                           "stack@%s tar -C %s -xpzf -" % (hostname, host_dir))
@@ -124,7 +133,7 @@ def copyPuppetModules(config):
 def waitforpuppet(currently_running):
     global controller
     log_len = 0
-    twirl = ["--","\\","|","/"]
+    twirl = ["*  ","** ","***","** "]
     while currently_running:
         for hostname, finished_logfile in currently_running:
             log_file = os.path.splitext(os.path.basename(finished_logfile))[0]
@@ -227,6 +236,26 @@ def applyPuppetManifest(config):
 
     # wait for outstanding puppet runs befor exiting
     waitforpuppet(currently_running)
+
+def init_demo_network(config):
+    def _build_network_script(cfg):
+        with open("%s/other/default-network.sh.template" % basedefs.DIR_PROJECT_DIR, 'r') as f:
+            return f.read() % cfg
+
+    host = config['CONFIG_KEYSTONE_HOST']
+    content = _build_network_script(config)
+    script_file = open("/tmp/create-net-script.sh", "w")
+    script_file.write(content)
+    script_file.close()
+    os.system("chmod +x /tmp/create-net-script.sh")
+    os.system("scp /tmp/create-net-script.sh stack@%s:/tmp/" % host)
+    os.system("scp $HOME/keystonerc_admin stack@%s:/tmp/" % host)
+    server = utils.ScriptRunner(host)
+    server.append("cd /tmp/ && /tmp/create-net-script.sh")
+    server.execute()
+
+
+
 
 
 

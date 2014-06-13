@@ -23,6 +23,7 @@ from .exceptions import FlagValidationError, ParamValidationError
 from packstack import version
 from packstack.modules.ospluginutils import gethostlist
 from setup_controller import Controller
+from client_conf import CLIENT_CONFIG
 
 controller = Controller()
 commandLineValues = {}
@@ -334,7 +335,7 @@ def _loadParamFromFile(config, section, paramName):
 
     return value
 
-def _handleAnswerFileParams(answerFile):
+def _handleAnswerFileParams(answerFile, overwrite_setting=False):
     """
     handle loading and validating
     params from answer file
@@ -353,17 +354,25 @@ def _handleAnswerFileParams(answerFile):
 
             # Handle pre conditions for group
             preConditionValue = True
-            if group.PRE_CONDITION:
+            if (group.PRE_CONDITION and (not overwrite_setting)):
                 preConditionValue = _handleGroupCondition(fconf, group.PRE_CONDITION, preConditionValue)
 
             # Handle pre condition match with case insensitive values
-            if preConditionValue == group.PRE_CONDITION_MATCH:
+            if (preConditionValue == group.PRE_CONDITION_MATCH) or overwrite_setting:
                 for param in group.parameters.itervalues():
-                    _loadParamFromFile(fconf, "general", param.CONF_NAME)
+                    try:
+                        _loadParamFromFile(fconf, "general", param.CONF_NAME)
+                    except KeyError as ex:
+                        # Client customize part will
+                        # not cover all options
+                        if overwrite_setting:
+                            continue
+                        else:
+                            raise ex
 
                 # Handle post conditions for group only if pre condition passed
                 postConditionValue = True
-                if group.POST_CONDITION:
+                if (group.POST_CONDITION and (not overwrite_setting)):
                     postConditionValue = _handleGroupCondition(fconf, group.POST_CONDITION, postConditionValue)
 
                     # Handle post condition match for group
@@ -397,6 +406,22 @@ def _getanswerfilepath():
 
     controller.MESSAGES.append(msg)
     return path
+
+def _get_client_setting_path(show_msg=False):
+    path = None
+    msg = "Could not find a suitable path on which to create the answerfile"
+
+    p = os.path.expanduser("~/")
+    if os.access(p, os.W_OK):
+        path = os.path.abspath(os.path.join(p, "packstack-client-answers.txt"))
+        msg = "A new client answerfile was created in: %s" % path
+
+    controller.MESSAGES.append(msg)
+    return path
+
+def generate_client_cfg_file(cfg_path):
+    with open(cfg_path, 'w') as f:
+        f.write(CLIENT_CONFIG)
 
 def _handleInteractiveParams():
     try:
@@ -459,6 +484,14 @@ def _handleInteractiveParams():
     except:
         logging.error(traceback.format_exc())
         raise Exception(output_messages.ERR_EXP_HANDLE_PARAMS)
+
+def _overwrite_with_user_setting():
+    client_conf = _get_client_setting_path()
+
+    if os.path.exists(client_conf):
+        _handleAnswerFileParams(client_conf, overwrite_setting=True)
+
+    
 
 def _handleParams(configFile):
     _addDefaultsToMaskedValueSet()
@@ -557,6 +590,9 @@ def _main(configFile=None):
 
     # Get parameters
     _handleParams(configFile)
+
+    # cylee : Update  with user defined subset
+    _overwrite_with_user_setting()
 
     # Update masked_value_list with user input values
     _updateMaskedValueSet()
@@ -687,6 +723,9 @@ def single_step_install(options):
         overrides[key] = value
 
     generateAnswerFile(answerfilepath, overrides)
+    client_cfg_path = _get_client_setting_path()
+    generate_client_cfg_file(client_cfg_path)
+
     _main(answerfilepath)
 
 def initCmdLineParser():
@@ -864,6 +903,8 @@ def main():
             # Make sure only --gen-answer-file was supplied
             validateSingleFlag(options, "gen_answer_file")
             generateAnswerFile(options.gen_answer_file)
+            # cylee : generate client client customize file too
+            generate_client_cfg_file(_get_client_setting_path(show_msg=True))
         # Are we installing an all in one
         elif options.allinone:
             if getattr(options, 'answer_file', None):

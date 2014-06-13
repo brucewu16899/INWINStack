@@ -7,7 +7,9 @@ class { 'openstack::provision':
   neutron_available     => %(PROVISION_NEUTRON_AVAILABLE)s,
   setup_ovs_bridge      => %(CONFIG_PROVISION_ALL_IN_ONE_OVS_BRIDGE)s,
   public_bridge_name    => '%(CONFIG_NEUTRON_L3_EXT_BRIDGE)s',
-  floating_range        => '%(CONFIG_PROVISION_DEMO_FLOATRANGE)s',
+  floating_range        => '%(CONFIG_EXT_NET_IP_RANGE)s',
+  public_gw_ip          => '%(CONFIG_EXT_NET_GW_IP)s',
+  allocation_pools      => 'start=%(CONFIG_EXT_NET_IP_START)s,end=%(CONFIG_EXT_NET_IP_END)s',
 }
 
 if %(CONFIG_PROVISION_ALL_IN_ONE_OVS_BRIDGE)s {

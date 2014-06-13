@@ -1,8 +1,8 @@
-
+# cylee: Fix hard code part
 # We need this before https://review.openstack.org/#/c/67004/ will be merged
 if 'openvswitch' in %(CONFIG_NEUTRON_ML2_MECHANISM_DRIVERS)s and !defined(Package['neutron-plugin-ovs']) {
   package {'neutron-plugin-ovs':
-    name   => 'openstack-neutron-openvswitch',
+    name   => $neutron::params::ovs_server_package,
     ensure => 'installed',
     before => Class['neutron::plugins::ml2']
   }
@@ -10,7 +10,7 @@ if 'openvswitch' in %(CONFIG_NEUTRON_ML2_MECHANISM_DRIVERS)s and !defined(Packag
 
 if 'linuxbridge' in %(CONFIG_NEUTRON_ML2_MECHANISM_DRIVERS)s and !defined(Package['neutron-plugin-linuxbridge']) {
   package {'neutron-plugin-linuxbridge':
-    name   => 'openstack-neutron-linuxbridge',
+    name   =>  $neutron::params::linuxbridge_server_package,
     ensure => 'installed',
     before => Class['neutron::plugins::ml2']
   }
@@ -25,7 +25,7 @@ class { 'neutron::plugins::ml2':
   tunnel_id_ranges      => %(CONFIG_NEUTRON_ML2_TUNNEL_ID_RANGES)s,
   vxlan_group           => %(CONFIG_NEUTRON_ML2_VXLAN_GROUP)s,
   vni_ranges            => %(CONFIG_NEUTRON_ML2_VNI_RANGES)s,
-  enable_security_group => 'dummy',
+  enable_security_group => true,
 }
 
 # For cases where "neutron-db-manage upgrade" command is called we need to fill config file first
