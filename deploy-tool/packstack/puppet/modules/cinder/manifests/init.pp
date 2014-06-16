@@ -200,7 +200,7 @@ class cinder (
       require 'mysql::python'
     }
   } elsif($database_connection_real =~ /postgresql:\/\/\S+:\S+@\S+\/\S+/) {
-
+  
   } elsif($database_connection_real =~ /sqlite:\/\//) {
 
   } else {

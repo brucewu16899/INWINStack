@@ -42,6 +42,14 @@ class ceilometer::db (
     }
     /^mongodb:\/\//: {
       $backend_package = $::ceilometer::params::pymongo_package_name
+      #Bevis: if use mongodb, will remove sqlite setting at ceilometer.conf and /var/lib/ceilometer.sqlite db file
+      ceilometer_config {
+      'DEFAULT/sqlite_db': ensure => 'absent',
+      }
+      file {'remove-ceilometer-sqilte':
+        path => '/var/lib/ceilometer/ceilometer.sqlite',
+        ensure => 'absent',
+      }
     }
     /^sqlite:\/\//: {
       $backend_package = $::ceilometer::params::sqlite_package_name

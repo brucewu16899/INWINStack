@@ -309,6 +309,11 @@ class heat(
       }
       /^postgresql:\/\//: {
         $backend_package = 'python-psycopg2'
+        #Bevis: remove heat.sqlite db file
+        file {'remove-heat-sqilte':
+        path => '/var/lib/heat/heat.sqlite',
+        ensure => 'absent',
+        }
       }
       /^sqlite:\/\//: {
         $backend_package = 'python-pysqlite2'

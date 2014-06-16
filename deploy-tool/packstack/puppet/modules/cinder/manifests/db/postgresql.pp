@@ -17,5 +17,5 @@ class cinder::db::postgresql(
     user      =>  $user,
     password  =>  $password,
   }
-
+  
 }
