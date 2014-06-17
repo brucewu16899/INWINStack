@@ -5,7 +5,7 @@ if '%(CONFIG_NEUTRON_INSTALL)s' == 'y' {
     exec {"fullaccess-rm-sec-group":
         command => "/usr/bin/neutron --os-tenant-name admin --os-username admin --os-password '%(CONFIG_KEYSTONE_ADMIN_PW)s' --os-auth-url='http://%(CONFIG_KEYSTONE_HOST)s:5000/v2.0/' security-group-delete fullaccess",
         onlyif => "/usr/bin/neutron --os-tenant-name admin --os-username admin --os-password '%(CONFIG_KEYSTONE_ADMIN_PW)s' --os-auth-url='http://%(CONFIG_KEYSTONE_HOST)s:5000/v2.0/' security-group-list -F name -f csv |grep fullaccess",
-    } ->
+    }
     exec {"fullaccess-sec-group":
         command => "/usr/bin/neutron --os-tenant-name admin --os-username admin --os-password '%(CONFIG_KEYSTONE_ADMIN_PW)s' --os-auth-url='http://%(CONFIG_KEYSTONE_HOST)s:5000/v2.0/' security-group-create fullaccess",
     } ->
