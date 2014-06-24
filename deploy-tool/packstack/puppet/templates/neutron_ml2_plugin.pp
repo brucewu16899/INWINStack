@@ -26,6 +26,7 @@ class { 'neutron::plugins::ml2':
   vxlan_group           => %(CONFIG_NEUTRON_ML2_VXLAN_GROUP)s,
   vni_ranges            => %(CONFIG_NEUTRON_ML2_VNI_RANGES)s,
   enable_security_group => true,
+  local_ip              => '%(CONFIG_NEUTRON_SERVER_HOST)s',
 }
 
 # For cases where "neutron-db-manage upgrade" command is called we need to fill config file first

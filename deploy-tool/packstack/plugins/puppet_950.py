@@ -62,6 +62,8 @@ def initSequences(controller):
             'functions': [applyPuppetManifest]},
         {'title': 'Create demo network',
             'functions': [init_demo_network]},
+        {'title': 'Adding post setup script',
+            'functions':[create_post_setup_manifest]},
     ]
     controller.addSequence("Puppet", [], [], puppetsteps)
 
@@ -255,7 +257,34 @@ def init_demo_network(config):
     server.execute()
 
 
+def create_post_setup_manifest(config):
+    def _build_post_setup_script(cfg):
 
+        fname = "%s/other/post_setup.py" % basedefs.DIR_PROJECT_DIR
+        os.system('cp %s /tmp/' % fname)
+        os.system("sed -i -e 's/%(CONFIG_EXT_NET_IFACE)s"
+                   + ("/%(CONFIG_EXT_NET_IFACE)s/g' /tmp/post_setup.py" % cfg))
 
+        os.system("sed -i -e 's/%(CONFIG_NEUTRON_L3_EXT_BRIDGE)s"
+                   + ("/%(CONFIG_NEUTRON_L3_EXT_BRIDGE)s/g' /tmp/post_setup.py" % cfg))
+
+        os.system("sed -i -e 's/%(CONFIG_NEUTRON_L3_EXT_BRIDGE_TYPE)s"
+                   + ("/%(CONFIG_NEUTRON_L3_EXT_BRIDGE_TYPE)s/g' /tmp/post_setup.py" % cfg))
+
+        os.system("sed -i -e 's/%(CONFIG_EXT_NET_MASK)s"
+                   + ("/%(CONFIG_EXT_NET_MASK)s/g' /tmp/post_setup.py" % cfg))
+
+        os.system("sed -i -e 's/%(CONFIG_EXT_NET_GW_IP)s"
+                   + ("/%(CONFIG_EXT_NET_GW_IP)s/g' /tmp/post_setup.py" % cfg))
+
+        os.system("sed -i -e 's/%(CONFIG_NEUTRON_SERVER_HOST)s"
+                   + ("/%(CONFIG_NEUTRON_SERVER_HOST)s/g' /tmp/post_setup.py" % cfg))
+
+    host = config['CONFIG_NEUTRON_SERVER_HOST']
+    _build_post_setup_script(config)
+    os.system("chmod +x /tmp/post_setup.py")
+    os.system("scp /tmp/post_setup.py stack@%s:" % host)
+    
+    
 
 

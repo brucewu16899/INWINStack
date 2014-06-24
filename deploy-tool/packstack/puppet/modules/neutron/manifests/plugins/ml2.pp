@@ -106,7 +106,15 @@ class neutron::plugins::ml2 (
   $vxlan_group           = '224.0.0.1',
   $vni_ranges            = ['10:100'],
   $enable_security_group = false,
-  $firewall_driver       = true
+  $enable_tunneling      = true,
+  $firewall_driver       = 'neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver',
+  $local_ip              = false,
+  $tunnel_types          = ['vxlan'],
+  $integration_bridge    = 'br-int',
+  $tunnel_bridge         = 'br-tun',
+  $vxlan_udp_port        = 4789,
+  $polling_interval      = 2,
+
 ) {
 
   include neutron::params
@@ -164,15 +172,32 @@ class neutron::plugins::ml2 (
       })
       Package['neutron-plugin-ovs'] -> Neutron_plugin_ovs<||>
     }
-    if ('l2population' in $mechanism_drivers) {
-      neutron_plugin_ovs {
-        'agent/l2_population': value => true;
-      }
-    } else {
-      neutron_plugin_ovs {
-        'agent/l2_population': value => false;
-      }
+
+
+
+    # cylee : move ovs setting to here
+    if $enable_tunneling {
+
+        neutron_plugin_ml2 {
+            'ovs/enable_tunneling': value => true;
+            'ovs/tenant_network_type': value => join($tenant_network_types, ',');
+            'ovs/tunnel_types': value => join($tunnel_types, ',');
+            'ovs/tunnel_bridge':    value => $tunnel_bridge;
+            'ovs/local_ip':         value => $local_ip;
+            'ovs/integration_bridge': value => $integration_bridge;
+            'agent/polling_interval': value => $polling_interval;
+            'agent/tunnel_types': value => join($tunnel_types, ',');
+            'agent/l2_population': value => true;
+        }
+        if 'vxlan' in $tunnel_types {
+            validate_vxlan_udp_port($vxlan_udp_port)
+            neutron_plugin_ml2 {
+                'ovs/vxlan_udp_port': value => $vxlan_udp_port;
+            }
+        }
     }
+
+    # ----
   }
   if ('linuxbridge' in $mechanism_drivers) {
     if ($::osfamily == 'RedHat') {
@@ -195,13 +220,13 @@ class neutron::plugins::ml2 (
   }
 
   if $enable_security_group {
-    neutron_plugin_ml2 {
-      'securitygroup/firewall_driver': value => $firewall_driver;
-    }
+      neutron_plugin_ml2 {
+          'securitygroup/firewall_driver': value => $firewall_driver;
+      }
   } else {
-    neutron_plugin_ml2 {
-      'securitygroup/firewall_driver': value => 'neutron.agent.firewall.NoopFirewallDriver';
-    }
+      neutron_plugin_ml2 {
+          'securitygroup/firewall_driver': value => 'neutron.agent.firewall.NoopFirewallDriver';
+      }
   }
 
 }

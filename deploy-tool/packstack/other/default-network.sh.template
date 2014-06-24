@@ -2,38 +2,23 @@
 
 
 # Create Tenant and User #
-tenant=demo1
-user=demo1
-usermail=inwin.dev@gmail.com
+tenant=admin
+user=admin
 role=admin
 source $HOME/keystonerc_admin
-
-if keystone tenant-list | grep -q $tenant;then
-    echo "Tenant $tenant existed!"
-else
-    tenant_id=`keystone tenant-create --name $tenant | awk '/id/{print $4}'`
-fi
-
-if keystone user-list | grep -q $user;then
-    echo "User $user existed!"
-else
-    keystone user-create --name=$user --pass=password --tenant-id $tenant_id --email=$usermail
-fi
-
-keystone user-role-add --tenant $tenant  --user $user --role $role
-
 
 # Create Router and Network #
 neutron net-create Ext-Net --shared --provider:network_type vxlan --provider:segmentation_id 1 --router:external true
 echo "create network"
-neutron subnet-create  --allocation-pool start=%(CONFIG_EXT_NET_IP_START)s,end=%(CONFIG_EXT_NET_IP_END)s --gateway %(CONFIG_EXT_NET_GW_IP)s Ext-Net %(CONFIG_EXT_NET_IP_RANGE)s --enable_dhcp=False
+pubnet_id=`neutron subnet-create  --allocation-pool start=%(CONFIG_EXT_NET_IP_START)s,end=%(CONFIG_EXT_NET_IP_END)s --gateway %(CONFIG_EXT_NET_GW_IP)s Ext-Net %(CONFIG_EXT_NET_IP_RANGE)s --enable_dhcp=False| awk '$2~/^id/{print $4}'`
 echo "create subnet"
 neutron --os-tenant-name $tenant --os-username $user --os-password password --os-auth-url=http://%(CONFIG_KEYSTONE_HOST)s:5000/v2.0 net-create $tenant-Net
 echo "os-tenant-name"
-subnet_id=`neutron --os-tenant-name $tenant --os-username $user --os-password password --os-auth-url=http://%(CONFIG_KEYSTONE_HOST)s:5000/v2.0 subnet-create $tenant-Net 10.0.0.0/24 | awk '$2~/^id/{print $4}'`
+subnet_id=`neutron --os-tenant-name $tenant --os-username $user --os-password password --os-auth-url=http://%(CONFIG_KEYSTONE_HOST)s:5000/v2.0 subnet-create $tenant-Net 10.10.0.0/16 | awk '$2~/^id/{print $4}'`
 neutron --os-tenant-name $tenant --os-username $user --os-password password --os-auth-url=http://%(CONFIG_KEYSTONE_HOST)s:5000/v2.0 router-create $tenant-R1
 echo "os-tenant-name"
 neutron --os-tenant-name $tenant --os-username $user --os-password password --os-auth-url=http://%(CONFIG_KEYSTONE_HOST)s:5000/v2.0 router-interface-add $tenant-R1 ${subnet_id}
+neutron --os-tenant-name $tenant --os-username $user --os-password password --os-auth-url=http://%(CONFIG_KEYSTONE_HOST)s:5000/v2.0 router-interface-add $tenant-R1 ${pubnet_id}
 echo "router-interface-add"
 neutron router-gateway-set $tenant-R1 Ext-Net
 echo "GW"

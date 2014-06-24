@@ -34,20 +34,17 @@ def initConfig(controllerObject):
 
 def initSequences(controller):
     osclientsteps = [
-             {'title': 'Adding post install manifest entries', 'functions':[createmanifest]}
+             {'title': 'Adding post install manifest entries', 'functions':[createmanifest]},
+             
     ]
     controller.addSequence("Running post install scripts", [], [], osclientsteps)
 
 
 def createmanifest(config):
-    for hostname in filtered_hosts(config):
+    for hostname in set(filtered_hosts(config)):
         manifestfile = "%s_postscript.pp" % hostname
-        # cylee : We don't need  postscript selinux anymore.
         manifestdata = getManifestTemplate("postscript.pp")
         appendManifestFile(manifestfile, manifestdata, 'postscript')
-        if config["CONFIG_NEUTRON_INSTALL"] == 'y':
-            if config.get("CONFIG_PROVISION_ALL_IN_ONE_OVS_BRIDGE") != 'n':
-                config['EXT_BRIDGE_VAR'] = config['CONFIG_NEUTRON_L3_EXT_BRIDGE'].replace('-','_')
-                manifestdata = getManifestTemplate("persist_ovs_bridge.pp")
-                appendManifestFile(manifestfile, manifestdata, 'postscript')
+
+
 

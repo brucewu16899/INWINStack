@@ -416,7 +416,8 @@ def _get_client_setting_path(show_msg=False):
         path = os.path.abspath(os.path.join(p, "packstack-client-answers.txt"))
         msg = "A new client answerfile was created in: %s" % path
 
-    controller.MESSAGES.append(msg)
+    if show_msg:
+        controller.MESSAGES.append(msg)
     return path
 
 def generate_client_cfg_file(cfg_path):

@@ -271,7 +271,7 @@ def install_keys(config):
             hostname = hostname.split('/')[0]
         server = utils.ScriptRunner(hostname)
         server.append("sshpass -p stack ssh-copy-id -i %s "
-                      "-o StrictHostKeyChecking=no stack@%s" %
+                      "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null stack@%s" %
                       (config['CONFIG_SSH_KEY'], hostname))
         server.execute()
 

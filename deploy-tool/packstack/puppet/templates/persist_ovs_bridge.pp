@@ -21,8 +21,8 @@ if ($::osfamily == 'RedHat'){
     if ("%(CONFIG_NEUTRON_L3_EXT_BRIDGE_TYPE)s" == "static") {
         $net_script = "auto %(CONFIG_NEUTRON_L3_EXT_BRIDGE)s
         iface %(CONFIG_NEUTRON_L3_EXT_BRIDGE)s inet static
-        address $ipaddress_%(EXT_BRIDGE_VAR)s
-        netmask $netmask_%(EXT_BRIDGE_VAR)s"
+        address $ipaddress_%(CONFIG_EXT_NET_IFACE)s
+        netmask $netmask_%(CONFIG_EXT_NET_IFACE)s"
     } elsif ("%(CONFIG_NEUTRON_L3_EXT_BRIDGE_TYPE)s" == "dhcp" ) {
         $net_script = "auto %(CONFIG_NEUTRON_L3_EXT_BRIDGE)s
         iface %(CONFIG_NEUTRON_L3_EXT_BRIDGE)s inet dhcp

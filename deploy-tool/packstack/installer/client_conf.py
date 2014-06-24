@@ -53,4 +53,9 @@ CONFIG_EXT_NET_IP_START=172.20.100.10
 #End address for the external network
 CONFIG_EXT_NET_IP_END=172.20.100.200
 
+#Public network binded NIC name netmask
+CONFIG_EXT_NET_MASK=255.255.255.0
+
+#Public network binded NIC name
+CONFIG_EXT_NET_IFACE=eth0
 """
