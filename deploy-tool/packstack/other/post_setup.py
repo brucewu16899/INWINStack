@@ -294,7 +294,7 @@ def _append_br_static_promisc_setting(bridge_name, address, netmask, gateway,
     "    dns-nameservers 8.8.8.8 8.8.8.4\n"
     "    up ip link set $IFACE promisc on\n"
     "    down ip link set $IFACE promisc off") % (bridge_name, bridge_name,
-                                                  address, netmask)
+                                                  address, netmask, gateway)
     return src_content + new_part
 
 def _append_br_dhcp_promisc_setting(bridge_name, netmask, src_content):
