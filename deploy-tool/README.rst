@@ -82,6 +82,12 @@ then edit ans.txt or packstack-client-answers.txt as appropriate e.g.
 
 The installer will try to load ans.txt first then overwrite them with options exists in packstack-client-answers.txt.
 
+
+::
+
+ $ bin/inwinstack --answer-file=ans.txt
+
+
 After installation, the installer will generate a script called **post_setup.py** under your home folder. Please run
 it console because it may disable network traffic.
 
@@ -90,10 +96,6 @@ it console because it may disable network traffic.
  $ sudo $HOME/post_setup.py
 
 
-
-::
-
- $ bin/inwinstack --answer-file=ans.txt
 
 ----------
  Logging
