@@ -95,7 +95,7 @@ def initConfig(controllerObject):
              "PROMPT"          : "Enter the way of bridge the Neutron L3 agent will use for external traffic(static or dhcp)",
              "OPTION_LIST"     : ["static", "dhcp"],
              "VALIDATORS"      : [validators.validate_not_empty],
-             "DEFAULT_VALUE"   : "dhcp",
+             "DEFAULT_VALUE"   : "static",
              "MASK_INPUT"      : False,
              "LOOSE_VALIDATION": True,
              "CONF_NAME"       : "CONFIG_NEUTRON_L3_EXT_BRIDGE_TYPE",
@@ -119,10 +119,34 @@ def initConfig(controllerObject):
              "PROMPT"          : "Enter a comma separated list of IP addresses on which to install Neutron LBaaS agent",
              "OPTION_LIST"     : [],
              "VALIDATORS"      : [validators.validate_multi_ssh],
-             "DEFAULT_VALUE"   : "",
+             "DEFAULT_VALUE"   : utils.get_localhost_ip(),
              "MASK_INPUT"      : False,
              "LOOSE_VALIDATION": True,
              "CONF_NAME"       : "CONFIG_NEUTRON_LBAAS_HOSTS",
+             "USE_DEFAULT"     : False,
+             "NEED_CONFIRM"    : False,
+             "CONDITION"       : False },
+            {"CMD_OPTION"      : "neutron-vpnaas-hosts",
+             "USAGE"           : "A comma separated list of IP addresses on which to install Neutron VPNaaS agent",
+             "PROMPT"          : "Enter a comma separated list of IP addresses on which to install Neutron VPNaaS agent",
+             "OPTION_LIST"     : [],
+             "VALIDATORS"      : [validators.validate_multi_ssh],
+             "DEFAULT_VALUE"   : utils.get_localhost_ip(),
+             "MASK_INPUT"      : False,
+             "LOOSE_VALIDATION": True,
+             "CONF_NAME"       : "CONFIG_NEUTRON_VPNAAS_HOSTS",
+             "USE_DEFAULT"     : False,
+             "NEED_CONFIRM"    : False,
+             "CONDITION"       : False },
+            {"CMD_OPTION"      : "neutron-fwaas-hosts",
+             "USAGE"           : "A comma separated list of IP addresses on which to install Neutron FWaaS agent",
+             "PROMPT"          : "Enter a comma separated list of IP addresses on which to install Neutron FWaaS agent",
+             "OPTION_LIST"     : [],
+             "VALIDATORS"      : [validators.validate_multi_ssh],
+             "DEFAULT_VALUE"   : utils.get_localhost_ip(),
+             "MASK_INPUT"      : False,
+             "LOOSE_VALIDATION": True,
+             "CONF_NAME"       : "CONFIG_NEUTRON_FWAAS_HOSTS",
              "USE_DEFAULT"     : False,
              "NEED_CONFIRM"    : False,
              "CONDITION"       : False },
@@ -681,11 +705,13 @@ def initSequences(controller):
     config['CONFIG_NEUTRON_L2_DBNAME']  = plugin_db
     config['CONFIG_NEUTRON_CORE_PLUGIN'] = plugin_path
 
-    global api_hosts, l3_hosts, dhcp_hosts, lbaas_hosts, compute_hosts, meta_hosts, q_hosts
+    global api_hosts, l3_hosts, dhcp_hosts, lbaas_hosts, vpnaas_hosts, fwaas_hosts, compute_hosts, meta_hosts, q_hosts
     api_hosts = split_hosts(config['CONFIG_NEUTRON_SERVER_HOST'])
     l3_hosts = split_hosts(config['CONFIG_NEUTRON_L3_HOSTS'])
     dhcp_hosts = split_hosts(config['CONFIG_NEUTRON_DHCP_HOSTS'])
     lbaas_hosts = split_hosts(config['CONFIG_NEUTRON_LBAAS_HOSTS'])
+    vpnaas_hosts = split_hosts(config['CONFIG_NEUTRON_VPNAAS_HOSTS'])
+    fwaas_hosts = split_hosts(config['CONFIG_NEUTRON_FWAAS_HOSTS'])
     meta_hosts = split_hosts(config['CONFIG_NEUTRON_METADATA_HOSTS'])
     compute_hosts = set()
     if config['CONFIG_NOVA_INSTALL'] == 'y':
@@ -705,6 +731,10 @@ def initSequences(controller):
          'functions': [create_dhcp_manifests]},
         {'title': 'Adding Neutron LBaaS Agent manifest entries',
          'functions': [create_lbaas_manifests]},
+        {'title': 'Adding Neutron VPNaaS Agent manifest entries',
+         'functions': [create_vpnaas_manifests]},
+        {'title': 'Adding Neutron FWaaS Agent manifest entries',
+         'functions': [create_fwaas_manifests]},
         {'title': 'Adding Neutron Metadata Agent manifest entries',
          'functions': [create_metadata_manifests]},
     ]
@@ -720,6 +750,15 @@ def create_manifests(config):
         service_plugins.append(
             'neutron.services.loadbalancer.plugin.LoadBalancerPlugin'
         )
+    if config['CONFIG_NEUTRON_VPNAAS_HOSTS']:
+        service_plugins.append(
+            'neutron.services.vpn.plugin.VPNDriverPlugin'
+        )
+    if config['CONFIG_NEUTRON_FWAAS_HOSTS']:
+        service_plugins.append(
+            'neutron.services.firewall.fwaas_plugin.FirewallPlugin'
+        )
+
     if config['CONFIG_NEUTRON_L2_PLUGIN'] == 'ml2':
         # ML2 uses the L3 Router service plugin to implement l3 agent
         service_plugins.append(
@@ -841,6 +880,21 @@ def create_lbaas_manifests(config):
     for host in lbaas_hosts:
         controller.CONF['CONFIG_NEUTRON_LBAAS_INTERFACE_DRIVER'] = get_if_driver(config)
         manifestdata = getManifestTemplate("neutron_lbaas.pp")
+        manifestfile = "%s_neutron.pp" % (host,)
+        appendManifestFile(manifestfile, manifestdata + "\n")
+
+def create_vpnaas_manifests(config):
+    global vpnaas_hosts
+    for host in vpnaas_hosts:
+        manifestdata = getManifestTemplate("neutron_vpnaas.pp")
+        manifestfile = "%s_neutron.pp" % (host,)
+        appendManifestFile(manifestfile, manifestdata + "\n")
+
+
+def create_fwaas_manifests(config):
+    global fwaas_hosts
+    for host in fwaas_hosts:
+        manifestdata = getManifestTemplate("neutron_fwaas.pp")
         manifestfile = "%s_neutron.pp" % (host,)
         appendManifestFile(manifestfile, manifestdata + "\n")
 

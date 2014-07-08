@@ -245,11 +245,11 @@ class horizon(
   # be merged with user-provided options when the local_settings.py.erb
   # template is interpolated.
   $neutron_defaults = {
-    'enable_lb'             => false,
-    'enable_firewall'       => false,
+    'enable_lb'             => true,
+    'enable_firewall'       => true,
     'enable_quotas'         => true,
     'enable_security_group' => true,
-    'enable_vpn'            => false,
+    'enable_vpn'            => true,
     'profile_support'       => 'None'
   }
 

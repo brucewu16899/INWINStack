@@ -96,6 +96,17 @@ it console because it may disable network traffic.
  $ sudo $HOME/post_setup.py
 
 
+Don't forget add below setting to **/etc/neutron/neutron.conf**, section **service_providers**
+
+::
+
+[service_providers]
+
+service_provider=FIREWALL:iptables:neutron.services.firewall.drivers.linux.iptables_fwaas.IptablesFwaasDriver:default
+
+
+Don't forget allocate floating IP in access/security panel before you start launch instance.
+
 
 ----------
  Logging

@@ -65,6 +65,11 @@ class neutron::agents::vpnaas (
         ensure => present,
         name   => $::neutron::params::openswan_package,
       }
+
+      # cylee : need add server_provider
+#     neutron_config { 'service_providers/service_provider':
+#       value => join(['VPN', 'openswan', $vpn_device_driver, 'default'], ':')
+#     }
     }
     default: {
       fail("Unsupported vpn_device_driver ${vpn_device_driver}")

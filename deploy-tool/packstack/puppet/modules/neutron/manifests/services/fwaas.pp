@@ -51,4 +51,9 @@ class neutron::services::fwaas (
     'fwaas/enabled': value => $enabled;
     'fwaas/driver':  value => $driver;
   }
+
+  # cylee : need add server_provider
+# neutron_config { 'service_providers/service_provider':
+#   value => join(['FIREWALL', 'iptables', $driver, 'default'], ':')
+# }
 }

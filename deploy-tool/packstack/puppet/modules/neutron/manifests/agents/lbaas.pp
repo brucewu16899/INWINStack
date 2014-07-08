@@ -56,6 +56,10 @@ class neutron::agents::lbaas (
   case $device_driver {
     /\.haproxy/: {
       Package[$::neutron::params::haproxy_package] -> Package<| title == 'neutron-lbaas-agent' |>
+      # cylee : need add server_provider
+#     neutron_config { 'service_providers/service_provider':
+#       value => join(['LOADBALANCER', 'ha-proxy', $device_driver, 'default'], ':')
+#     }
 
       if $manage_haproxy_package {
         ensure_packages([$::neutron::params::haproxy_package])
