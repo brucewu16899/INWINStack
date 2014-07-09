@@ -109,7 +109,7 @@ class neutron::plugins::ml2 (
   $enable_tunneling      = true,
   $firewall_driver       = 'neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver',
   $local_ip              = false,
-  $tunnel_types          = ['vxlan'],
+  $tunnel_types          = ['gre'],
   $integration_bridge    = 'br-int',
   $tunnel_bridge         = 'br-tun',
   $vxlan_udp_port        = 4789,
@@ -184,6 +184,7 @@ class neutron::plugins::ml2 (
             'ovs/tunnel_types': value => join($tunnel_types, ',');
             'ovs/tunnel_bridge':    value => $tunnel_bridge;
             'ovs/local_ip':         value => $local_ip;
+            'ovs/tunnel_id_ranges':  value => $tunnel_id_ranges;
             'ovs/integration_bridge': value => $integration_bridge;
             'agent/polling_interval': value => $polling_interval;
             'agent/tunnel_types': value => join($tunnel_types, ',');

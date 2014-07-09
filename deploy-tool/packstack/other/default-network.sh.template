@@ -8,7 +8,7 @@ role=admin
 source $HOME/keystonerc_admin
 
 # Create Router and Network #
-neutron net-create Ext-Net --shared --provider:network_type vxlan --provider:segmentation_id 1 --router:external true
+neutron net-create Ext-Net --shared --provider:network_type gre --provider:segmentation_id 1 --router:external true
 echo "create network"
 pubnet_id=`neutron subnet-create  --allocation-pool start=%(CONFIG_EXT_NET_IP_START)s,end=%(CONFIG_EXT_NET_IP_END)s --gateway %(CONFIG_EXT_NET_GW_IP)s Ext-Net %(CONFIG_EXT_NET_IP_RANGE)s --enable_dhcp=False| awk '$2~/^id/{print $4}'`
 echo "create subnet"
